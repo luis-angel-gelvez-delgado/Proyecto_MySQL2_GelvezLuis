@@ -32,14 +32,14 @@ BEGIN
         FROM domicilio d
         WHERE d.id_pedido = p_id_pedido;
     ELSE
-        -- si es para local, el costo de envío es 0
+        -- si es para local no se cobra el evio
         SET v_envio = 0;
     END IF;
 
     -- Calcular el IVA (19% del subtotal + envío)
-    SET v_iva = (v_subtotal + v_envio) * 0.19;
+    SET v_iva = (v_subtotal + v_envio) * 1.19;
 
-    -- Calcular el total
+    -- Calcular el total final
     SET v_total = v_subtotal + v_envio + v_iva;
 
     RETURN v_total;
