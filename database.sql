@@ -278,29 +278,24 @@ VALUES
 (4, 4, 1, 'domicilio', '2025-01-12', '18:20:00', 'en preparacion', 0),
 (5, 1, 4, 'local',     '2025-01-13', '16:50:00', 'cancelado',       0);
 
-INSERT INTO detalle_pedido (id_pedido, id_pizza, cantidad, subtotal)
-VALUES
--- Pedido 6
-(6, 1, 2, 36000),
-(6, 3, 1, 35000),
+-- detalle_pedido
+INSERT INTO detalle_pedido (id_pedido, id_pizza, cantidad, subtotal) VALUES
+-- Pedido 1
+(1, 1, 2, 36000),
+(1, 3, 1, 35000),
+-- Pedido 2
+(2, 2, 1, 22000),
+(2, 3, 1, 35000),
+-- Pedido 3
+(3, 4, 1, 25000),
+-- Pedido 4
+(4, 5, 2, 30000),
+-- Pedido 5 (cancelado pero con elementos)
+(5, 1, 1, 18000);
 
--- Pedido 7
-(7, 2, 1, 22000),
-(7, 3, 1, 35000),
-
--- Pedido 8
-(8, 4, 1, 25000),
-
--- Pedido 9
-(9, 5, 2, 30000),
-
--- Pedido 10 (cancelado pero con elementos)
-(10, 1, 1, 18000);
-
--- isserciones en domicilio
+-- domicilios (solo para pedidos tipo domicilio: 2 y 4)
 INSERT INTO domicilio (
     id_pedido, id_repartidor, id_tipo_pago_domicilio, direccion, hora_salida, hora_entrega, distancia, precio_domicilio
-)
-VALUES
-(7, 1, 1, 'Carrera 10 #20-30', '2025-01-11 13:50:00', '2025-01-11 14:20:00', 4.2, 5000),
-(9, 2, 1, 'Avenida 5 #15-25', '2025-01-12 18:30:00', '2025-01-12 19:05:00', 3.8, 5000);
+) VALUES
+(2, 1, 1, 'Carrera 10 #20-30', '2025-01-11 13:50:00', '2025-01-11 14:20:00', 4.2, 5000),
+(4, 2, 1, 'Avenida 5 #15-25', '2025-01-12 18:30:00', '2025-01-12 19:05:00', 3.8, 5000);
