@@ -1,3 +1,4 @@
+
 -- Creacion de la database
 create database pizzeria_don_piccolo;
 use pizzeria_don_piccolo;
@@ -174,3 +175,124 @@ VALUES
 ('cedula', 10000018, 'Paula', 'Mendoza', 3145678901, 'Diagonal 20 #30-40', 'paula.mendoza@example.com'),
 ('cedula', 10000019, 'Fernando', 'Salazar', 3156789012, 'Transversal 5 #15-25', 'fernando.salazar@example.com'),
 ('cedula', 10000020, 'Carolina', 'Pineda', 3167890123, 'Calle 110 #90-100', 'carolina.pineda@example.com');
+
+
+-- Inserciones de zonas
+INSERT INTO zona (nombre, precio_domicilio) VALUES
+('Bucaramanga', 3500),
+('Norte', 4000),
+('Floridablanca', 5000);
+
+-- Insertar clientes de los que hay en persona
+INSERT INTO cliente (id_persona) VALUES
+(1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12);
+
+-- Insertar empleados con su cargo
+INSERT INTO empleado (id_persona, cargo) VALUES
+(13, 'pizzero'),
+(14, 'mesero'),
+(15, 'vendedor'),
+(16, 'pizzero');
+
+-- Insertar repartidores con zona y estado
+INSERT INTO repartidor (id_persona, id_zona, estado) VALUES
+(17, 1, 'disponible'),
+(18, 2, 'disponible'),
+(19, 3, 'no disponible'),
+(20, 1, 'disponible');
+
+-- Insertar pizzas
+INSERT INTO pizza (nombre, tamano, descripcion, precio)
+VALUES
+('Margarita', 'mediana', 'Queso mozzarella y salsa de tomate', 18000),
+('Hawaiana', 'mediana', 'Jamon y pina', 22000),
+('Pepperoni', 'familiar', 'Pepperoni y queso mozzarella', 35000),
+('Vegetariana', 'mediana', 'Verduras mixtas y queso', 25000),
+('Cuatro Quesos', 'mini', 'Mezcla de quesos especiales', 15000);
+
+INSERT INTO ingrediente (nombre, stock, precio)
+VALUES
+('Queso mozzarella', 50, 3000),
+('Salsa de tomate', 40, 1500),
+('Jamon', 30, 2500),
+('Pina', 25, 2000),
+('Pepperoni', 40, 2800),
+('Verduras mixtas', 20, 2200),
+('Quesos especiales', 15, 3500);
+
+
+-- Asociar ingredientes a pizzas
+-- Margarita (id 1)
+INSERT INTO ingrediente_pizza (id_ingrediente, id_pizza, cantidad) VALUES
+(1, 1, 2),  -- queso
+(2, 1, 1);  -- salsa
+
+-- Hawaiana (id 2)
+INSERT INTO ingrediente_pizza (id_ingrediente, id_pizza, cantidad) VALUES
+(1, 2, 2),
+(2, 2, 1),
+(3, 2, 2), -- jamon
+(4, 2, 1); -- pina
+
+-- Pepperoni (id 3)
+INSERT INTO ingrediente_pizza (id_ingrediente, id_pizza, cantidad) VALUES
+(1, 3, 2),
+(2, 3, 1),
+(5, 3, 3); -- pepperoni
+
+-- Vegetariana (id 4)
+INSERT INTO ingrediente_pizza (id_ingrediente, id_pizza, cantidad) VALUES
+(1, 4, 1),
+(2, 4, 1),
+(6, 4, 2); -- verduras
+
+-- Cuatro quesos (id 5)
+INSERT INTO ingrediente_pizza (id_ingrediente, id_pizza, cantidad) VALUES
+(1, 5, 1),
+(7, 5, 2); -- quesos especiales
+
+
+-- Inserciones tipo_pago
+INSERT INTO tipo_pago (metodo, subtotal)
+VALUES
+('efectivo', 0),
+('tarjeta credito', 0),
+('tarjeta debito', 0),
+('transferencia', 0);
+
+-- inserciones en pedido
+INSERT INTO pedido (id_cliente, id_empleado, id_tipo_pago, tipo_pedido, fecha, hora, estado, precio_total)
+VALUES
+(1, 13, 1, 'local',     '2025-01-10', '12:30:00', 'en preparacion', 0),
+(2, 14, 2, 'domicilio', '2025-01-11', '13:45:00', 'en camino',       0),
+(3, 15, 3, 'local',     '2025-01-12', '15:10:00', 'entregado',       0),
+(4, 16, 1, 'domicilio', '2025-01-12', '18:20:00', 'en preparacion',  0),
+(5, 13, 4, 'local',     '2025-01-13', '16:50:00', 'cancelado',       0);
+
+INSERT INTO detalle_pedido (id_pedido, id_pizza, cantidad, subtotal)
+VALUES
+-- Pedido 1
+(1, 1, 2, 36000),
+(1, 3, 1, 35000),
+
+-- Pedido 2
+(2, 2, 1, 22000),
+(2, 3, 1, 35000),
+
+-- Pedido 3
+(3, 4, 1, 25000),
+
+-- Pedido 4
+(4, 5, 2, 30000),
+
+-- Pedido 5 cancelado pero con elemenros
+(5, 1, 1, 18000);
+
+-- isserciones en domicilio
+INSERT INTO domicilio (id_pedido, id_repartidor, hora_salida, hora_entrega, distancia_km, costo_envio)
+VALUES
+-- Pedido 2 (domicilio)
+(2, 1, '2025-01-11 13:50:00', '2025-01-11 14:20:00', 4.2, 5000),
+
+-- Pedido 4 (domicilio)
+(4, 2, '2025-01-12 18:30:00', '2025-01-12 19:05:00', 3.8, 5000);
