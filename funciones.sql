@@ -1,54 +1,40 @@
--- funcion para calcular el total de un pedido
+delimiter //
 
-DELIMITER //
+create function calcular_total_pedido(p_id_pedido int)
+returns double
+reads sql data
+not deterministic
+begin
+    declare v_subtotal double default 0;
+    declare v_envio double default 0;
+    declare v_total double default 0;
+    declare v_tipo_pedido varchar(20);
 
-CREATE FUNCTION calcular_total_pedido(p_id_pedido INT) 
-RETURNS double
-NOT DETERMINISTIC
-BEGIN
-    DECLARE v_subtotal DOUBLE DEFAULT 0;
-    DECLARE v_envio DOUBLE DEFAULT 0;
-    DECLARE v_iva DOUBLE DEFAULT 0;
-    DECLARE v_total DOUBLE DEFAULT 0;
-    DECLARE v_tipo_pedido ENUM('domicilio', 'local');
+    select tipo_pedido
+    into v_tipo_pedido
+    from pedido
+    where id_pedido = p_id_pedido;
 
-    -- Obtener el tipo de pedido
-    SELECT tipo_pedido
-    INTO v_tipo_pedido
-    FROM pedido
-    WHERE id_pedido = p_id_pedido;
+    select coalesce(sum(dp.subtotal),0)
+    into v_subtotal
+    from detalle_pedido dp
+    where dp.id_pedido = p_id_pedido;
 
-    -- subtotal de las pizzas
-    SELECT COALESCE(SUM(dp.subtotal), 0)
-    INTO v_subtotal
-    FROM detalle_pedido dp
-    WHERE dp.id_pedido = p_id_pedido;
+    if v_tipo_pedido = 'domicilio' then
+        select coalesce(d.precio_domicilio,0)
+        into v_envio
+        from domicilio d
+        where d.id_pedido = p_id_pedido;
+    else
+        set v_envio = 0;
+    end if;
 
-    -- ver wsi el pedido es a domicilio o local
-    IF v_tipo_pedido = 'domicilio' THEN
-        -- calcular el costo por si es a domicilio
-        SELECT COALESCE(d.precio_domicilio, 0)
-        INTO v_envio
-        FROM domicilio d
-        WHERE d.id_pedido = p_id_pedido;
-    ELSE
-        -- si es para local no se cobra el evio
-        SET v_envio = 0;
-    END IF;
+    set v_total = (v_subtotal + v_envio) * 1.19;
 
-    -- Calcular el IVA (19% del subtotal + envío)
-    SET v_iva = (v_subtotal + v_envio) * 1.19;
+    return v_total;
+end; //
 
-    -- Calcular el total final
-    SET v_total = v_subtotal + v_envio + v_iva;
-
-    RETURN v_total;
-END; //
-
-DELIMITER ;
-
--- Ejemplo de uso:
-SELECT calcular_total_pedido(1);
+delimiter ;
 
 
 
@@ -61,36 +47,37 @@ SELECT calcular_total_pedido(1);
 
 
 -- funcion para calcular ganancias diarias
-DELIMITER //
+delimiter //
 
-CREATE FUNCTION calcular_ganancia_diaria(p_fecha DATE)
-RETURNS DOUBLE
-NOT DETERMINISTIC
-BEGIN
-    DECLARE v_ventas DOUBLE DEFAULT 0;
-    DECLARE v_costos DOUBLE DEFAULT 0;
-    DECLARE v_ganancia DOUBLE DEFAULT 0;
+create function calcular_ganancia_diaria(p_fecha date)
+returns double
+reads sql data
+not deterministic
+begin
+    declare v_ventas double default 0;
+    declare v_costos double default 0;
+    declare v_ganancia double default 0;
 
-    -- Total de ventas del dia
-    SELECT COALESCE(SUM(dp.subtotal), 0)
-    INTO v_ventas
-    FROM pedido p
-    JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
-    WHERE DATE(p.fecha) = p_fecha;
+    -- total de ventas del dia
+    select coalesce(sum(dp.subtotal), 0)
+    into v_ventas
+    from pedido p
+    join detalle_pedido dp on p.id_pedido = dp.id_pedido
+    where date(p.fecha) = p_fecha;
 
-    -- Costo de ingredientes usados ese dia
-    SELECT COALESCE(SUM(ip.cantidad * i.precio), 0)
-    INTO v_costos
-    FROM pedido p
-    JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
-    JOIN ingrediente_pizza ip ON dp.id_pizza = ip.id_pizza
-    JOIN ingrediente i ON ip.id_ingrediente = i.id_ingrediente
-    WHERE DATE(p.fecha) = p_fecha;
+    -- costo de ingredientes usados ese dia
+    select coalesce(sum(ip.cantidad * i.precio), 0)
+    into v_costos
+    from pedido p
+    join detalle_pedido dp on p.id_pedido = dp.id_pedido
+    join ingrediente_pizza ip on dp.id_pizza = ip.id_pizza
+    join ingrediente i on ip.id_ingrediente = i.id_ingrediente
+    where date(p.fecha) = p_fecha;
 
-    -- la ganancia sale de restar ventas - costos
-    SET v_ganancia = v_ventas - v_costos;
+    -- ganancia = ventas - costos
+    set v_ganancia = v_ventas - v_costos;
 
-    RETURN v_ganancia;
-END; //
+    return v_ganancia;
+end; //
 
-DELIMITER ;
+delimiter ;

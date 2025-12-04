@@ -174,7 +174,7 @@ VALUES
 ('cedula', 10000017, 'Ricardo', 'Guerrero', 3134567890, 'Carrera 35 #45-55', 'ricardo.guerrero@example.com'),
 ('cedula', 10000018, 'Paula', 'Mendoza', 3145678901, 'Diagonal 20 #30-40', 'paula.mendoza@example.com'),
 ('cedula', 10000019, 'Fernando', 'Salazar', 3156789012, 'Transversal 5 #15-25', 'fernando.salazar@example.com'),
-('cedula', 10000020, 'Carolina', 'Pineda', 3167890123, 'Calle 110 #90-100', 'carolina.pineda@example.com');
+('cedula', 10000020, 'Carolina', 'Pineda', 3167890123, 'Calle 110 #90-100', 'carolina.pineda@example.com'); 
 
 
 -- Inserciones de zonas
@@ -208,7 +208,7 @@ VALUES
 ('Hawaiana', 'mediana', 'Jamon y pina', 22000),
 ('Pepperoni', 'familiar', 'Pepperoni y queso mozzarella', 35000),
 ('Vegetariana', 'mediana', 'Verduras mixtas y queso', 25000),
-('Cuatro Quesos', 'mini', 'Mezcla de quesos especiales', 15000);
+('Cuatro Quesos', 'mini', 'Mezcla de quesos especiales', 15000); 
 
 INSERT INTO ingrediente (nombre, stock, precio)
 VALUES
@@ -260,39 +260,47 @@ VALUES
 ('tarjeta debito', 0),
 ('transferencia', 0);
 
+-- Inserciones tipo_pago_domicilio
+INSERT INTO tipo_pago_domicilio (metodo, subtotal)
+VALUES
+('efectivo', 0),
+('tarjeta credito', 0),
+('tarjeta debito', 0),
+('transferencia', 0);
+
+
 -- inserciones en pedido
 INSERT INTO pedido (id_cliente, id_empleado, id_tipo_pago, tipo_pedido, fecha, hora, estado, precio_total)
 VALUES
-(1, 13, 1, 'local',     '2025-01-10', '12:30:00', 'en preparacion', 0),
-(2, 14, 2, 'domicilio', '2025-01-11', '13:45:00', 'en camino',       0),
-(3, 15, 3, 'local',     '2025-01-12', '15:10:00', 'entregado',       0),
-(4, 16, 1, 'domicilio', '2025-01-12', '18:20:00', 'en preparacion',  0),
-(5, 13, 4, 'local',     '2025-01-13', '16:50:00', 'cancelado',       0);
+(1, 1, 1, 'local',     '2025-01-10', '12:30:00', 'en preparacion', 0),
+(2, 2, 2, 'domicilio', '2025-01-11', '13:45:00', 'en camino',       0),
+(3, 3, 3, 'local',     '2025-01-12', '15:10:00', 'entregado',       0),
+(4, 4, 1, 'domicilio', '2025-01-12', '18:20:00', 'en preparacion', 0),
+(5, 1, 4, 'local',     '2025-01-13', '16:50:00', 'cancelado',       0);
 
 INSERT INTO detalle_pedido (id_pedido, id_pizza, cantidad, subtotal)
 VALUES
--- Pedido 1
-(1, 1, 2, 36000),
-(1, 3, 1, 35000),
+-- Pedido 6
+(6, 1, 2, 36000),
+(6, 3, 1, 35000),
 
--- Pedido 2
-(2, 2, 1, 22000),
-(2, 3, 1, 35000),
+-- Pedido 7
+(7, 2, 1, 22000),
+(7, 3, 1, 35000),
 
--- Pedido 3
-(3, 4, 1, 25000),
+-- Pedido 8
+(8, 4, 1, 25000),
 
--- Pedido 4
-(4, 5, 2, 30000),
+-- Pedido 9
+(9, 5, 2, 30000),
 
--- Pedido 5 cancelado pero con elemenros
-(5, 1, 1, 18000);
+-- Pedido 10 (cancelado pero con elementos)
+(10, 1, 1, 18000);
 
 -- isserciones en domicilio
-INSERT INTO domicilio (id_pedido, id_repartidor, hora_salida, hora_entrega, distancia_km, costo_envio)
+INSERT INTO domicilio (
+    id_pedido, id_repartidor, id_tipo_pago_domicilio, direccion, hora_salida, hora_entrega, distancia, precio_domicilio
+)
 VALUES
--- Pedido 2 (domicilio)
-(2, 1, '2025-01-11 13:50:00', '2025-01-11 14:20:00', 4.2, 5000),
-
--- Pedido 4 (domicilio)
-(4, 2, '2025-01-12 18:30:00', '2025-01-12 19:05:00', 3.8, 5000);
+(7, 1, 1, 'Carrera 10 #20-30', '2025-01-11 13:50:00', '2025-01-11 14:20:00', 4.2, 5000),
+(9, 2, 1, 'Avenida 5 #15-25', '2025-01-12 18:30:00', '2025-01-12 19:05:00', 3.8, 5000);
