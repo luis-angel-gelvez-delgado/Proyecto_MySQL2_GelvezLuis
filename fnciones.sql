@@ -1,10 +1,10 @@
-- funcion para calcular el total de un pedido
+-- funcion para calcular el total de un pedido
 
 DELIMITER //
 
 CREATE FUNCTION calcular_total_pedido(p_id_pedido INT) 
 RETURNS double
-NOT ETERMINISTIC
+NOT DETERMINISTIC
 BEGIN
     DECLARE v_subtotal DOUBLE DEFAULT 0;
     DECLARE v_envio DOUBLE DEFAULT 0;
@@ -47,6 +47,8 @@ END; //
 
 DELIMITER ;
 
+-- Ejemplo de uso:
+SELECT calcular_total_pedido(1);
 
 
 
@@ -58,3 +60,37 @@ DELIMITER ;
 
 
 
+-- funcion para calcular ganancias diarias
+DELIMITER //
+
+CREATE FUNCTION calcular_ganancia_diaria(p_fecha DATE)
+RETURNS DOUBLE
+NOT DETERMINISTIC
+BEGIN
+    DECLARE v_ventas DOUBLE DEFAULT 0;
+    DECLARE v_costos DOUBLE DEFAULT 0;
+    DECLARE v_ganancia DOUBLE DEFAULT 0;
+
+    -- Total de ventas del dia
+    SELECT COALESCE(SUM(dp.subtotal), 0)
+    INTO v_ventas
+    FROM pedido p
+    JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
+    WHERE DATE(p.fecha) = p_fecha;
+
+    -- Costo de ingredientes usados ese dia
+    SELECT COALESCE(SUM(ip.cantidad * i.precio), 0)
+    INTO v_costos
+    FROM pedido p
+    JOIN detalle_pedido dp ON p.id_pedido = dp.id_pedido
+    JOIN ingrediente_pizza ip ON dp.id_pizza = ip.id_pizza
+    JOIN ingrediente i ON ip.id_ingrediente = i.id_ingrediente
+    WHERE DATE(p.fecha) = p_fecha;
+
+    -- la ganancia sale de restar ventas - costos
+    SET v_ganancia = v_ventas - v_costos;
+
+    RETURN v_ganancia;
+END; //
+
+DELIMITER ;
